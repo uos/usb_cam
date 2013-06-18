@@ -53,7 +53,7 @@ public:
   int image_width_,image_height_;
   std::string pixel_format_name_;
   bool autofocus_;
-
+  std::string distortion_model_;
   sensor_msgs::CameraInfo info_;
 
   ros::Time next_time_;
@@ -64,8 +64,10 @@ public:
   image_transport::CameraPublisher image_pub_;
 
   UsbCamNode() :
-      node_("~")
+        node_("~")
   {
+	ROS_INFO("Init Class");
+
     image_transport::ImageTransport it(node_);
     image_pub_ = it.advertiseCamera("image_raw", 1);
 
@@ -75,12 +77,14 @@ public:
     node_.param("image_height", image_height_, 480);
     node_.param("pixel_format", pixel_format_name_, std::string("mjpeg")); // possible values: yuyv, uyvy, mjpeg
     node_.param("autofocus", autofocus_, false); // enable/disable autofocus
-
+    node_.param("distortion_model", distortion_model_, std::string("plumb_bob"));
+    
     {
       XmlRpc::XmlRpcValue double_list;
       info_.height = image_height_;
       info_.width = image_width_;
-
+      info_.distortion_model = distortion_model_;
+      
       node_.param("camera_frame_id", img_.header.frame_id, std::string("head_camera"));
       info_.header.frame_id = img_.header.frame_id;
 
@@ -130,7 +134,8 @@ public:
     printf("usb_cam image_height set to [%d]\n", image_height_);
     printf("usb_cam pixel_format set to [%s]\n", pixel_format_name_.c_str());
     printf("usb_cam auto_focus set to [%d]\n", autofocus_);
-
+    printf("usb_cam distrotion_model set to [%s]\n", distortion_model_.c_str());
+    
     usb_cam_io_method io_method;
     if(io_method_name_ == "mmap")
       io_method = IO_METHOD_MMAP;
@@ -170,6 +175,8 @@ public:
 
     next_time_ = ros::Time::now();
     count_ = 0;
+
+	ROS_INFO("Finished Init Class");
   }
 
   virtual ~UsbCamNode()
@@ -215,8 +222,10 @@ public:
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "usb_cam");
+  ros::init(argc, argv, "usb_cam", ros::init_options::AnonymousName);
+  ROS_INFO("Node Start");
   UsbCamNode a;
+  ROS_INFO("Spin");
   a.spin();
   return 0;
 }
