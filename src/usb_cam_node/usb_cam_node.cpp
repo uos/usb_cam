@@ -66,8 +66,6 @@ public:
   UsbCamNode() :
         node_("~")
   {
-	ROS_INFO("Init Class");
-
     image_transport::ImageTransport it(node_);
     image_pub_ = it.advertiseCamera("image_raw", 1);
 
@@ -175,8 +173,6 @@ public:
 
     next_time_ = ros::Time::now();
     count_ = 0;
-
-	ROS_INFO("Finished Init Class");
   }
 
   virtual ~UsbCamNode()
@@ -222,10 +218,8 @@ public:
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "usb_cam", ros::init_options::AnonymousName);
-  ROS_INFO("Node Start");
+  ros::init(argc, argv, "usb_cam");
   UsbCamNode a;
-  ROS_INFO("Spin");
   a.spin();
   return 0;
 }
