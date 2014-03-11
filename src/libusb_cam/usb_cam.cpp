@@ -279,7 +279,6 @@ yuyv2rgb(char *YUV, char *RGB, int NumPixels) {
 
 static int init_mjpeg_decoder(int image_width, int image_height)
 {
-  avcodec_init();
   avcodec_register_all();
 
   avcodec = avcodec_find_decoder(CODEC_ID_MJPEG);
